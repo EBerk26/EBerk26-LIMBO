@@ -5,20 +5,37 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.event.*;
 public class Main implements Runnable,KeyListener {
-    final int WIDTH = 1028;
-    final int HEIGHT = 700;
+    public int WIDTH = 1028;
+    public int HEIGHT = 700;
     public JFrame JFrame;
     public Canvas Canvas;
     public JPanel JPanel;
     public BufferStrategy BufferStrategy;
+    Player player = new Player();
     public void keyPressed(KeyEvent e){
-
+        if(e.getKeyCode()==KeyEvent.VK_RIGHT){
+            player.rightIsPressed = true;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_LEFT){
+            player.leftIsPressed = true;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_UP){
+            player.upIsPressed = true;
+        }
     }
     public void keyTyped(KeyEvent e){
 
     }
     public void keyReleased(KeyEvent e){
-
+        if(e.getKeyCode()==KeyEvent.VK_RIGHT){
+            player.rightIsPressed = false;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_LEFT){
+            player.leftIsPressed = false;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_UP){
+            player.upIsPressed = false;
+        }
     }
     public static void main(String[] args) {
         Main ex = new Main();
@@ -35,6 +52,7 @@ public class Main implements Runnable,KeyListener {
         }
     }
     public void moveThings(){
+        player.handleMovement();
     }
     public void pause(int time){
         try {
@@ -62,7 +80,15 @@ public class Main implements Runnable,KeyListener {
     }
     private void render(){
         Graphics2D g = (Graphics2D) BufferStrategy.getDrawGraphics();
+            background();
+            g.fillRect((int)player.xpos,(int)player.ypos,player.width,player.height);
             g.dispose();
             BufferStrategy.show();
         }
+    void background(){
+        Graphics2D g = (Graphics2D) BufferStrategy.getDrawGraphics();
+        g.clearRect(0,0,WIDTH,HEIGHT);
+        g.drawLine(0,600+player.height,WIDTH,600+player.height);
     }
+}
+
