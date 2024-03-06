@@ -1,3 +1,4 @@
+import java.awt.*;
 public class Player {
     double xpos = 40;
     double ypos = 600;
@@ -5,20 +6,33 @@ public class Player {
     boolean leftIsPressed;
     boolean rightIsPressed;
     boolean upIsPressed;
-    double dx = 10;
-    final double initialJumpPower = 25*3/4;
-    double strengthOfGravity=1.5;
+    double dx = 5.5;
+    final double initialJumpPower = 15;
+    double strengthOfGravity=0.76;
     double dy;
     boolean onGround = true;
-    int width = 40;
+    int width = 30;
     int height = 40;
+    public Rectangle rectangle = new Rectangle((int)xpos,(int)ypos,width,height);
+
+    void refreshRectangle(){
+        rectangle = new Rectangle((int)xpos,(int)ypos,width,height);
+    }
     Player(){
 
+    }
+    void reset(){
+        xpos = 40;
+        ypos = 600;
+        inAir = false;
+        dy = 0;
+        onGround = true;
     }
     void handleMovement(){
         handleHorizontalMovement();
         handleJumping();
         handleLanding();
+        refreshRectangle();
     }
     void handleHorizontalMovement(){
         if(rightIsPressed&!leftIsPressed){
@@ -30,8 +44,8 @@ public class Player {
         if(xpos<0){
             xpos=0;
         }
-        if(xpos>1028-width){
-            xpos = 1028-width;
+        if(xpos>1470-width){
+            xpos = 1470-width;
         }
     }
     void handleJumping(){
@@ -55,5 +69,15 @@ public class Player {
             dy=0;
             ypos = 600;
         }
+    }
+    void fall(){
+        if (inAir&&!onGround){
+            dy-=strengthOfGravity;
+        }
+        ypos-=dy;
+    }
+    void teleport(double param_xpos,double param_ypos){
+        xpos = param_xpos;
+        ypos = param_ypos;
     }
 }
