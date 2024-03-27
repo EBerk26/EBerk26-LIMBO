@@ -15,7 +15,7 @@ public class Main implements Runnable,KeyListener {
     Player player = new Player();
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 2;
+    int startlevel = 1;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
             player.rightIsPressed = true;
@@ -53,6 +53,7 @@ public class Main implements Runnable,KeyListener {
             blockArray[x] = new Block();
         }
         if(startlevel==1) {
+            player.teleport(803,543);
             blockArray[0].placeBlock(1000, 520, 400, 50);
             blockArray[1].placeBlock(800, 449, 30, 20);
             blockArray[2].placeBlock(686, 387, 30, 20);
@@ -66,14 +67,17 @@ public class Main implements Runnable,KeyListener {
             pause(16);
         }
     }
+    boolean leftRightAlignment(int blocknumber){
+        return(player.xpos+player.width>=blockArray[blocknumber].xpos&&player.xpos<=blockArray[blocknumber].xpos+blockArray[blocknumber].width);
+    }
     public void moveThings(){
         touchingBlock = false;
         player.handleMovement();
         for(int x =0;x<blockArray.length;x++){
-            if(blockArray[x].ismoving&&player.ypos+player.height<=blockArray[x].ypos+1&&player.xpos+player.width>=blockArray[x].xpos&&player.xpos<=blockArray[x].xpos+blockArray[x].width&&!(player.ypos+player.height<=blockArray[x].ypos-5)){
+            if(blockArray[x].ismoving&&player.rectangle.intersects(blockArray[x].rectangle)&&player.ypos+player.height<=blockArray[x].ypos+4&&player.xpos+player.width>=blockArray[x].xpos&&player.xpos<=blockArray[x].xpos+blockArray[x].width){
                 player.ypos=blockArray[x].ypos-player.height;
                 player.ypos+=blockArray[x].dy*blockArray[x].ydirection;
-            }
+            } //to do - make a boolean to make the player move with moving blocks
             if(blockArray[x].ismoving){
                 blockArray[x].move();
                 blockArray[x].refreshRectangle();
@@ -86,21 +90,22 @@ public class Main implements Runnable,KeyListener {
                 touchingBlock = true;
             }
             if(player.rectangle.intersects(blockArray[x].rectangle)){
-                if(player.ypos+player.height<blockArray[x].ypos-player.dy&&(player.xpos+player.width>=blockArray[x].xpos||player.xpos<=blockArray[x].xpos+blockArray[x].width)&&!(player.ypos>blockArray[x].ypos)){
+                if (player.xpos+player.width<=blockArray[x].xpos+player.dx){
+                    player.xpos = blockArray[x].xpos-player.width;
+                } if (player.xpos>=blockArray[x].xpos+blockArray[x].width-player.dx){
+                    player.xpos = blockArray[x].xpos+blockArray[x].width;
+                } //sides of block
+                if(player.dy<0&&leftRightAlignment(x)&&player.ypos+player.height>=blockArray[x].ypos){
+                    System.out.println("done");
                     player.dy = 0;
                     player.inAir = false;
                     player.onGround = true;
                     player.ypos = blockArray[x].ypos- player.height;
-                }
-                        if (player.xpos+player.width<=blockArray[x].xpos+player.dx){
-                    player.xpos = blockArray[x].xpos-player.width;
-                } if (player.xpos>=blockArray[x].xpos+blockArray[x].width-player.dx){
-                    player.xpos = blockArray[x].xpos+blockArray[x].width;
-                }
-                if (player.xpos<blockArray[x].xpos+blockArray[x].width&&player.xpos+player.width>blockArray[x].xpos&&player.ypos+player.height>blockArray[x].ypos+blockArray[x].height&&player.dy>0){
+                } //hit top of block while falling
+                if (player.xpos+player.width>=blockArray[x].xpos&&player.xpos<=blockArray[x].xpos+blockArray[x].width&&player.ypos+player.height>blockArray[x].ypos+blockArray[x].height&&player.dy>0){
                     player.ypos = blockArray[x].ypos+blockArray[x].height;
                     player.dy=0;
-                }
+                } //bottom of block
             }
         }
         if(!touchingBlock&&!(player.ypos + player.height==640)&&!player.inAir){
@@ -185,4 +190,3 @@ public class Main implements Runnable,KeyListener {
         g.drawLine(0,600+player.height,WIDTH,600+player.height);
     }
 }
-
