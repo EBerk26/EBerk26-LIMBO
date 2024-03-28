@@ -15,7 +15,7 @@ public class Main implements Runnable,KeyListener {
     Player player = new Player();
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 1;
+    int startlevel = 3;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
             player.rightIsPressed = true;
@@ -53,7 +53,7 @@ public class Main implements Runnable,KeyListener {
             blockArray[x] = new Block();
         }
         if(startlevel==1) {
-            player.teleport(803,543);
+            //player.teleport(803,543);
             blockArray[0].placeBlock(1000, 520, 400, 50);
             blockArray[1].placeBlock(800, 449, 30, 20);
             blockArray[2].placeBlock(686, 387, 30, 20);
@@ -68,23 +68,23 @@ public class Main implements Runnable,KeyListener {
         }
     }
     boolean leftRightAlignment(int blocknumber){
-        return(player.xpos+player.width>=blockArray[blocknumber].xpos&&player.xpos<=blockArray[blocknumber].xpos+blockArray[blocknumber].width);
+        return(player.xpos+player.width>=1+blockArray[blocknumber].xpos&&player.xpos+1<=blockArray[blocknumber].xpos+blockArray[blocknumber].width);
     }
     public void moveThings(){
         touchingBlock = false;
         player.handleMovement();
         for(int x =0;x<blockArray.length;x++){
-            if(blockArray[x].ismoving&&player.rectangle.intersects(blockArray[x].rectangle)&&player.ypos+player.height<=blockArray[x].ypos+4&&player.xpos+player.width>=blockArray[x].xpos&&player.xpos<=blockArray[x].xpos+blockArray[x].width){
-                player.ypos=blockArray[x].ypos-player.height;
-                player.ypos+=blockArray[x].dy*blockArray[x].ydirection;
-            } //to do - make a boolean to make the player move with moving blocks
-            if(blockArray[x].ismoving){
-                blockArray[x].move();
-                blockArray[x].refreshRectangle();
-            }
             if(player.rectangle.intersects(blockArray[x].rectangle)&&blockArray[x].isDeadly){
                 player.reset();
                 break;
+            }
+            if(blockArray[x].ismoving&&((player.rectangle.intersects(blockArray[x].rectangle)&&player.ypos+player.height<=blockArray[x].ypos+3&&leftRightAlignment(x))||(leftRightAlignment(x)&&player.ypos+player.height==blockArray[x].ypos))){
+                player.ypos=blockArray[x].ypos-player.height+1;
+                player.ypos+=blockArray[x].dy*blockArray[x].ydirection;
+            }
+            if(blockArray[x].ismoving){
+                blockArray[x].move();
+                blockArray[x].refreshRectangle();
             }
             if(player.xpos+player.width>=blockArray[x].xpos&&player.xpos<=blockArray[x].xpos+blockArray[x].width&&player.ypos<=blockArray[x].ypos+blockArray[x].height&&player.ypos+player.height>=blockArray[x].ypos){
                 touchingBlock = true;
@@ -96,7 +96,6 @@ public class Main implements Runnable,KeyListener {
                     player.xpos = blockArray[x].xpos+blockArray[x].width;
                 } //sides of block
                 if(player.dy<0&&leftRightAlignment(x)&&player.ypos+player.height>=blockArray[x].ypos){
-                    System.out.println("done");
                     player.dy = 0;
                     player.inAir = false;
                     player.onGround = true;
@@ -138,7 +137,11 @@ public class Main implements Runnable,KeyListener {
                 blockArray[6].placeBlock(1114-31,224+23,200,40);
                 blockArray[7].placeBlock(1114-31-70,224+23,70,40);
                 blockArray[7].setinmotion(0,-4,0,0,-10,224+23+40);
-                player.teleport(1177,117);
+                //player.teleport(1170,166);
+            }
+            if(level==3){
+                blockArray[1].placeBlock(140,644,200,100);
+                blockArray[1].setinmotion(0,3,-100,2000,220,750);
             }
         }
     }
