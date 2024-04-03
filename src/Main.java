@@ -15,7 +15,7 @@ public class Main implements Runnable,KeyListener {
     Player player = new Player();
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 3;
+    int startlevel = 1;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
             player.rightIsPressed = true;
@@ -79,8 +79,13 @@ public class Main implements Runnable,KeyListener {
                 break;
             }
             if(blockArray[x].ismoving&&((player.rectangle.intersects(blockArray[x].rectangle)&&player.ypos+player.height<=blockArray[x].ypos+3&&leftRightAlignment(x))||(leftRightAlignment(x)&&player.ypos+player.height==blockArray[x].ypos))){
-                player.ypos=blockArray[x].ypos-player.height+1;
-                player.ypos+=blockArray[x].dy*blockArray[x].ydirection;
+                if(player.ypos>=blockArray[x].ypos+blockArray[x].height){
+                    player.dy=0;
+                    break;
+                } else {
+                    player.ypos = blockArray[x].ypos - player.height + 1;
+                    player.ypos += blockArray[x].dy * blockArray[x].ydirection;
+                }
             }
             if(blockArray[x].ismoving){
                 blockArray[x].move();
@@ -95,14 +100,14 @@ public class Main implements Runnable,KeyListener {
                 } if (player.xpos>=blockArray[x].xpos+blockArray[x].width-player.dx){
                     player.xpos = blockArray[x].xpos+blockArray[x].width;
                 } //sides of block
-                if(player.dy<0&&leftRightAlignment(x)&&player.ypos+player.height>=blockArray[x].ypos){
+                if(player.dy<0&&leftRightAlignment(x)&&player.ypos+player.height<=blockArray[x].ypos+blockArray[x].dy-player.dy+1){
                     player.dy = 0;
                     player.inAir = false;
                     player.onGround = true;
                     player.ypos = blockArray[x].ypos- player.height;
                 } //hit top of block while falling
-                if (player.xpos+player.width>=blockArray[x].xpos&&player.xpos<=blockArray[x].xpos+blockArray[x].width&&player.ypos+player.height>blockArray[x].ypos+blockArray[x].height&&player.dy>0){
-                    player.ypos = blockArray[x].ypos+blockArray[x].height;
+                if (player.xpos+player.width>=blockArray[x].xpos&&player.xpos<=blockArray[x].xpos+blockArray[x].width&&player.ypos+player.height+4-blockArray[x].dy>blockArray[x].ypos+blockArray[x].height&&player.dy>0){
+                    player.ypos = blockArray[x].ypos+blockArray[x].height+1-blockArray[x].dy;
                     player.dy=0;
                 } //bottom of block
             }
