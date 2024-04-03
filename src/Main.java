@@ -4,7 +4,32 @@ import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.event.*;
-public class Main implements Runnable,KeyListener {
+import java.awt.event.MouseListener;
+
+public class Main implements Runnable,KeyListener,MouseListener {
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        player.teleport(e.getX(),e.getY()- player.height);
+        player.dy=0;
+    }
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
     public int WIDTH = 1470;
     public int HEIGHT = 880;
     public JFrame JFrame;
@@ -15,7 +40,7 @@ public class Main implements Runnable,KeyListener {
     Player player = new Player();
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 1;
+    int startlevel = 2;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
             player.rightIsPressed = true;
@@ -65,12 +90,13 @@ public class Main implements Runnable,KeyListener {
             moveThings();
             render();
             pause(16);
+
         }
     }
     boolean leftRightAlignment(int blocknumber){
         return(player.xpos+player.width>=1+blockArray[blocknumber].xpos&&player.xpos+1<=blockArray[blocknumber].xpos+blockArray[blocknumber].width);
     }
-    public void moveThings(){
+    public void moveThings() {
         touchingBlock = false;
         player.handleMovement();
         for(int x =0;x<blockArray.length;x++){
@@ -78,7 +104,7 @@ public class Main implements Runnable,KeyListener {
                 player.reset();
                 break;
             }
-            if(blockArray[x].ismoving&&((player.rectangle.intersects(blockArray[x].rectangle)&&player.ypos+player.height<=blockArray[x].ypos+3&&leftRightAlignment(x))||(leftRightAlignment(x)&&player.ypos+player.height==blockArray[x].ypos))){
+            if(blockArray[x].ismoving&&((player.rectangle.intersects(blockArray[x].rectangle)&&player.ypos+player.height<=blockArray[x].ypos+blockArray[x].dy+1-player.dy&&leftRightAlignment(x))||(leftRightAlignment(x)&&player.ypos+player.height==blockArray[x].ypos))){
                 if(player.ypos>=blockArray[x].ypos+blockArray[x].height){
                     player.dy=0;
                     break;
@@ -123,11 +149,11 @@ public class Main implements Runnable,KeyListener {
             if(startlevel>level){
                 level=startlevel;
             }
-            for(int x = 0;x<blockArray.length;x++){
-                blockArray[x].placeBlock(10000,2,2,2);
-                blockArray[x].isDeadly = false;
-                blockArray[x].setinmotion(0,0,0,0,0,0);
-                blockArray[x].ismoving = false;
+            for (Block block : blockArray) {
+                block.placeBlock(10000, 2, 2, 2);
+                block.isDeadly = false;
+                block.setinmotion(0, 0, 0, 0, 0, 0);
+                block.ismoving = false;
             }
             player.reset();
             if (level==2){
@@ -153,7 +179,7 @@ public class Main implements Runnable,KeyListener {
     public void pause(int time){
         try {
             Thread.sleep(time);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
             }
         }
     private void setUpGraphics() {
@@ -165,7 +191,7 @@ public class Main implements Runnable,KeyListener {
         Canvas.setBounds(0, 0, WIDTH, HEIGHT);
         Canvas.setIgnoreRepaint(true);
         JPanel.add(Canvas);
-        JFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JFrame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
         JFrame.pack();
         JFrame.setResizable(false);
         JFrame.setVisible(true);
@@ -173,6 +199,7 @@ public class Main implements Runnable,KeyListener {
         BufferStrategy = Canvas.getBufferStrategy();
         Canvas.requestFocus();
         Canvas.addKeyListener(this);
+        Canvas.addMouseListener(this);
     }
     private void render(){
         Graphics2D g = (Graphics2D) BufferStrategy.getDrawGraphics();

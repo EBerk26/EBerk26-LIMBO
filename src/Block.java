@@ -14,6 +14,12 @@ public class Block {
     int xbounceright = 0;
     int ybouncetop = 0;
     int ybouncebottom=0;
+    String bouncedX = "";
+    String bouncedY = "";
+    double returndistanceX = 0;
+    double returndistanceY = 0;
+
+
     boolean ismoving = false;
     public Block(){
         refreshRectangle();
@@ -38,18 +44,52 @@ public class Block {
         ismoving=true;
     }
     void move(){
-        if(xpos+width+dx*xdirection>=xbounceright){
-            xdirection*=-1;
-        } else if(xpos+dx*xdirection<=xbounceleft){
-            xdirection*=-1;
+        bouncedX = "";
+        bouncedY = "";
+        if(xpos+width+dx*xdirection>=xbounceright&&dx!=0){
+            bouncedX = "right";
+        } else if(xpos+dx*xdirection<=xbounceleft&&dx!=0){
+            bouncedX = "left";
         }
-        if(ypos+height+dy*ydirection>=ybouncebottom){
-            ydirection*=-1;
-        } else if(ypos+dy*ydirection<=ybouncetop){
-            ydirection*=-1;
+        if(ypos+height+dy*ydirection>=ybouncebottom&&dy!=0){
+            bouncedY="bottom";
+        } else if(ypos+dy*ydirection<=ybouncetop&&dy!=0){
+            bouncedY="top";
         }
-        xpos+=dx*xdirection;
-        ypos+=dy*ydirection;
+        if(bouncedX.equals("right")){
+            xpos+=dx*xdirection;
+            returndistanceX=Math.abs(xpos+width-xbounceright);
+            xpos=xbounceright-width;
+            xdirection*=-1;
+            xpos+=dx*(xdirection-returndistanceX);
+        }
+        if(bouncedX.equals("left")){
+            xpos+=dx*xdirection;
+            returndistanceX=Math.abs(xpos-xbounceleft);
+            xpos=xbounceleft;
+            xdirection*=-1;
+            xpos+=dx*xdirection-returndistanceX;
+        }
+        if(bouncedY.equals("top")){
+            ypos+=dy*ydirection;
+            returndistanceY=Math.abs(ypos-ybouncetop);
+            ypos=ybouncetop;
+            ydirection*=-1;
+            ypos+=dy*ydirection-returndistanceY;
+        }
+        if(bouncedY.equals("bottom")){
+            ypos+=dy*ydirection;
+            returndistanceY=Math.abs(ypos+height-ybouncebottom);
+            ypos=ybouncebottom-height;
+            ydirection*=-1;
+            ypos+=dy*ydirection-returndistanceY;
+        }
+        if(bouncedX=="") {
+            xpos += dx * xdirection;
+        }
+        if(bouncedY==""){
+            ypos+=dy*ydirection;
+        }
     }
 
 }
