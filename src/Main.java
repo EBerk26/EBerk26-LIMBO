@@ -104,7 +104,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
                 player.reset();
                 break;
             }
-            if(blockArray[x].ismoving&&((player.rectangle.intersects(blockArray[x].rectangle)&&player.ypos+player.height<=blockArray[x].ypos+blockArray[x].dy+1-player.dy&&leftRightAlignment(x))||(leftRightAlignment(x)&&player.ypos+player.height==blockArray[x].ypos))){
+            if(blockArray[x].ismoving&&((player.rectangle.intersects(blockArray[x].rectangle)&&player.ypos+player.height<=blockArray[x].ypos+Math.abs(blockArray[x].dy)+1-player.dy&&leftRightAlignment(x))||(leftRightAlignment(x)&&player.ypos+player.height==blockArray[x].ypos))){
                 if(player.ypos>=blockArray[x].ypos+blockArray[x].height){
                     player.dy=0;
                     break;
@@ -132,8 +132,8 @@ public class Main implements Runnable,KeyListener,MouseListener {
                     player.onGround = true;
                     player.ypos = blockArray[x].ypos- player.height;
                 } //hit top of block while falling
-                if (player.xpos+player.width>=blockArray[x].xpos&&player.xpos<=blockArray[x].xpos+blockArray[x].width&&player.ypos+player.height+4-blockArray[x].dy>blockArray[x].ypos+blockArray[x].height&&player.dy>0){
-                    player.ypos = blockArray[x].ypos+blockArray[x].height+1-blockArray[x].dy;
+                if (leftRightAlignment(x)&&player.ypos+player.height+3+Math.abs(blockArray[x].dy)>blockArray[x].ypos+blockArray[x].height&&player.dy>0){
+                    player.ypos = blockArray[x].ypos+blockArray[x].height-blockArray[x].dy;
                     player.dy=0;
                 } //bottom of block
             }
