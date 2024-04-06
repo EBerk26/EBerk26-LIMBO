@@ -1,5 +1,6 @@
 import java.awt.*;
 public class Player {
+    boolean allowWrapping = true;
     double xpos = 40;
     double ypos = 600;
     boolean inAir = false;
@@ -41,10 +42,12 @@ public class Player {
         if(leftIsPressed&!rightIsPressed){
             xpos-=dx;
         }
-        if(xpos<0){
+        if(xpos<0&&!allowWrapping){
             xpos=0;
+        } else if (xpos<-width){
+            xpos = -width;
         }
-        if(xpos>1470-width){
+        if(xpos>1470-width&&!allowWrapping){
             xpos = 1470-width;
         }
     }

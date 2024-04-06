@@ -3,18 +3,31 @@ import java.awt.image.BufferStrategy;
 import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.tools.Tool;
 import java.awt.event.*;
 import java.awt.event.MouseListener;
 
 public class Main implements Runnable,KeyListener,MouseListener {
+    boolean isPlaying = false;
+    int numberOfStartLevels = 8;
+    int mouseX,mouseY;
+    boolean isstartscreen = true;
+    Image startlevels[] = new Image[5];
     @Override
     public void mouseClicked(MouseEvent e) {
-        player.teleport(e.getX(),e.getY()- player.height);
-        player.dy=0;
+        if(isPlaying) {
+            player.teleport(e.getX(), e.getY() - player.height);
+            player.dy = 0;
+            System.out.println("("+e.getX()+","+e.getY()+")");
+        } else{
+            mouseX = e.getX();
+            mouseY = e.getY();
+        }
     }
     @Override
     public void mousePressed(MouseEvent e) {
     }
+    Image startScreen;
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -35,12 +48,13 @@ public class Main implements Runnable,KeyListener,MouseListener {
     public JFrame JFrame;
     public Canvas Canvas;
     public JPanel JPanel;
+    boolean gameStarted = false;
     public BufferStrategy BufferStrategy;
     boolean touchingBlock;
     Player player = new Player();
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 2;
+    int startlevel = 1;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
             player.rightIsPressed = true;
@@ -68,29 +82,42 @@ public class Main implements Runnable,KeyListener,MouseListener {
     }
     public static void main(String[] args) {
         Main ex = new Main();
+
         new Thread(ex).start();
     }
     public Main(){
+        for(int x = 1;x<=4;x++){
+            startlevels[x] = Toolkit.getDefaultToolkit().getImage("startLevel"+x+".png");
+        }
+        Image startLevel7 = Toolkit.getDefaultToolkit().getImage("startLevel7.png");
         setUpGraphics();
+        startScreen = Toolkit.getDefaultToolkit().getImage("Limbo Start Screen.png");
     }
     public void run(){
+        while(!isPlaying) {
+            render();
+            if(mouseX>=629&&mouseX<=841&&mouseY>634){
+                isstartscreen=false;
+                isPlaying = true;
+            }
+        }
         for(int x =0;x< blockArray.length;x++){
             blockArray[x] = new Block();
         }
-        if(startlevel==1) {
-            //player.teleport(803,543);
-            blockArray[0].placeBlock(1000, 520, 400, 50);
-            blockArray[1].placeBlock(800, 449, 30, 20);
-            blockArray[2].placeBlock(686, 387, 30, 20);
-            blockArray[3].placeBlock(686, 267, 200, 20);
-            blockArray[4].placeBlock(926, 179, 50, 10);
-            blockArray[5].placeBlock(1063, 126, 41, 24);
-        }
-        while(true){
-            moveThings();
-            render();
-            pause(16);
-
+        if(isPlaying) {
+            while (true) {
+                if(level==1+numberOfStartLevels) {
+                    blockArray[0].placeBlock(1000, 520, 400, 50);
+                    blockArray[1].placeBlock(800, 449, 30, 20);
+                    blockArray[2].placeBlock(686, 387, 30, 20);
+                    blockArray[3].placeBlock(686, 267, 200, 20);
+                    blockArray[4].placeBlock(926, 179, 50, 10);
+                    blockArray[5].placeBlock(1063, 126, 41, 24);
+                }
+                moveThings();
+                render();
+                pause(16);
+            }
         }
     }
     boolean leftRightAlignment(int blocknumber){
@@ -98,6 +125,10 @@ public class Main implements Runnable,KeyListener,MouseListener {
     }
     public void moveThings() {
         touchingBlock = false;
+        if(level==1&&!gameStarted){
+            player.teleport(-player.width, 600+ player.height);
+            gameStarted = true;
+        }
         player.handleMovement();
         for(int x =0;x<blockArray.length;x++){
             if(player.rectangle.intersects(blockArray[x].rectangle)&&blockArray[x].isDeadly){
@@ -144,7 +175,16 @@ public class Main implements Runnable,KeyListener,MouseListener {
             player.dy=0;
             player.fall();
         }
-        if(player.ypos+player.height<0||startlevel>level){
+        if(level<=numberOfStartLevels&&player.xpos>=WIDTH){
+            level++;
+            if(level==1+numberOfStartLevels){
+                player.allowWrapping = false;
+
+            }
+            player.teleport(-player.width,600);
+
+        }
+        if(player.ypos+player.height<0||startlevel>level&&level>numberOfStartLevels){
             level++;
             if(startlevel>level){
                 level=startlevel;
@@ -156,7 +196,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
                 block.ismoving = false;
             }
             player.reset();
-            if (level==2){
+            if (level==2+numberOfStartLevels){
                 blockArray[1].placeBlock(239,640-120,20,120);
                 blockArray[1].isDeadly = true;
                 blockArray[2].placeBlock(1079,640-60,120,60);
@@ -168,9 +208,8 @@ public class Main implements Runnable,KeyListener,MouseListener {
                 blockArray[6].placeBlock(1114-31,224+23,200,40);
                 blockArray[7].placeBlock(1114-31-70,224+23,70,40);
                 blockArray[7].setinmotion(0,-4,0,0,-10,224+23+40);
-                //player.teleport(1170,166);
             }
-            if(level==3){
+            if(level==3+numberOfStartLevels){
                 blockArray[1].placeBlock(140,644,200,100);
                 blockArray[1].setinmotion(0,3,-100,2000,220,750);
             }
@@ -203,19 +242,35 @@ public class Main implements Runnable,KeyListener,MouseListener {
     }
     private void render(){
         Graphics2D g = (Graphics2D) BufferStrategy.getDrawGraphics();
+        if(isstartscreen){
+            g.drawImage(startScreen,0,0,WIDTH,HEIGHT,null);
+        }
+        if(!isstartscreen) {
             background();
-            for(int x = 0;x<=blockArray.length-1;x++){
-                if(!blockArray[x].isDeadly) {
+            if(level==1){
+                g.drawImage(startlevels[1],0,0,WIDTH,HEIGHT,null);
+            } else if (level ==2){
+
+            } else if (level==3){
+
+            } else if (level ==4){
+
+            } else if (level==7){
+
+            }
+            for (int x = 0; x <= blockArray.length - 1; x++) {
+                if (!blockArray[x].isDeadly) {
                     g.setColor(Color.ORANGE);
-                    g.fillRect((int)blockArray[x].xpos, (int)blockArray[x].ypos, blockArray[x].width, blockArray[x].height);
+                    g.fillRect((int) blockArray[x].xpos, (int) blockArray[x].ypos, blockArray[x].width, blockArray[x].height);
                 }
-                if(blockArray[x].isDeadly){
+                if (blockArray[x].isDeadly) {
                     g.setColor(Color.RED);
-                    g.fillRect((int)blockArray[x].xpos, (int)blockArray[x].ypos, blockArray[x].width, blockArray[x].height);
+                    g.fillRect((int) blockArray[x].xpos, (int) blockArray[x].ypos, blockArray[x].width, blockArray[x].height);
                 }
             }
             g.setColor(Color.BLACK);
-            g.fillRect((int)player.xpos,(int)player.ypos,player.width,player.height);
+            g.fillRect((int) player.xpos, (int) player.ypos, player.width, player.height);
+        }
             g.dispose();
             BufferStrategy.show();
         }
