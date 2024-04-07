@@ -54,7 +54,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     Player player = new Player();
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 1;
+    int startlevel = 10;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
             player.rightIsPressed = true;
@@ -108,8 +108,6 @@ public class Main implements Runnable,KeyListener,MouseListener {
             level=startlevel;
             if(startlevel>=9){
                 player.allowWrapping = false;
-            }
-            while (true) {
                 if(level==1+numberOfStartLevels) {
                     blockArray[0].placeBlock(1000, 520, 400, 50);
                     blockArray[1].placeBlock(800, 449, 30, 20);
@@ -118,6 +116,10 @@ public class Main implements Runnable,KeyListener,MouseListener {
                     blockArray[4].placeBlock(926, 179, 50, 10);
                     blockArray[5].placeBlock(1063, 126, 41, 24);
                 }
+                setUpLevels();
+            }
+            while (true) {
+
                 moveThings();
                 render();
                 pause(16);
@@ -200,23 +202,26 @@ public class Main implements Runnable,KeyListener,MouseListener {
                 block.ismoving = false;
             }
             player.reset();
-            if (level==2+numberOfStartLevels){
-                blockArray[1].placeBlock(239,640-120,20,120);
-                blockArray[1].isDeadly = true;
-                blockArray[2].placeBlock(1079,640-60,120,60);
-                blockArray[2].isDeadly = true;
-                blockArray[2].setinmotion(2.5,0,400,1206,-100,5000);
-                blockArray[3].placeBlock(1470-40,521,40,10);
-                blockArray[4].placeBlock(1470-50,521-100,50,10);
-                blockArray[5].placeBlock(1470-60,521-200,60,10);
-                blockArray[6].placeBlock(1114-31,224+23,200,40);
-                blockArray[7].placeBlock(1114-31-70,224+23,70,40);
-                blockArray[7].setinmotion(0,-4,0,0,-10,224+23+40);
-            }
-            if(level==3+numberOfStartLevels){
-                blockArray[1].placeBlock(140,644,200,100);
-                blockArray[1].setinmotion(0,3,-100,2000,220,750);
-            }
+            setUpLevels();
+        }
+    }
+    void setUpLevels(){
+        if (level==2+numberOfStartLevels){
+            blockArray[1].placeBlock(239,640-120,20,120);
+            blockArray[1].isDeadly = true;
+            blockArray[2].placeBlock(1079,640-60,120,60);
+            blockArray[2].isDeadly = true;
+            blockArray[2].setinmotion(2.5,0,400,1206,-100,5000);
+            blockArray[3].placeBlock(1470-40,521,40,10);
+            blockArray[4].placeBlock(1470-50,521-100,50,10);
+            blockArray[5].placeBlock(1470-60,521-200,60,10);
+            blockArray[6].placeBlock(1114-31,224+23,200,40);
+            blockArray[7].placeBlock(1114-31-70,224+23,70,40);
+            blockArray[7].setinmotion(0,-4,0,0,-10,224+23+40);
+        }
+        if(level==3+numberOfStartLevels){
+            blockArray[1].placeBlock(140,644,200,100);
+            blockArray[1].setinmotion(0,3,-100,2000,220,750);
         }
     }
     public void pause(int time){
