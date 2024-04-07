@@ -3,7 +3,6 @@ import java.awt.image.BufferStrategy;
 import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.tools.Tool;
 import java.awt.event.*;
 import java.awt.event.MouseListener;
 
@@ -12,7 +11,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     int numberOfStartLevels = 8;
     int mouseX,mouseY;
     boolean isstartscreen = true;
-    Image startlevels[] = new Image[5];
+    Image[] startlevels = new Image[5];
     @Override
     public void mouseClicked(MouseEvent e) {
         if(isPlaying) {
@@ -48,6 +47,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     public JFrame JFrame;
     public Canvas Canvas;
     public JPanel JPanel;
+    Image startLevel7;
     boolean gameStarted = false;
     public BufferStrategy BufferStrategy;
     boolean touchingBlock;
@@ -89,7 +89,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
         for(int x = 1;x<=4;x++){
             startlevels[x] = Toolkit.getDefaultToolkit().getImage("startLevel"+x+".png");
         }
-        Image startLevel7 = Toolkit.getDefaultToolkit().getImage("startLevel7.png");
+        startLevel7 = Toolkit.getDefaultToolkit().getImage("startLevel7.png");
         setUpGraphics();
         startScreen = Toolkit.getDefaultToolkit().getImage("Limbo Start Screen.png");
     }
@@ -105,6 +105,10 @@ public class Main implements Runnable,KeyListener,MouseListener {
             blockArray[x] = new Block();
         }
         if(isPlaying) {
+            level=startlevel;
+            if(startlevel>=9){
+                player.allowWrapping = false;
+            }
             while (true) {
                 if(level==1+numberOfStartLevels) {
                     blockArray[0].placeBlock(1000, 520, 400, 50);
@@ -249,14 +253,19 @@ public class Main implements Runnable,KeyListener,MouseListener {
             background();
             if(level==1){
                 g.drawImage(startlevels[1],0,0,WIDTH,HEIGHT,null);
+                g.drawLine(0,600+player.height,WIDTH,600+player.height);
             } else if (level ==2){
-
+                g.drawImage(startlevels[2],0,0,WIDTH,HEIGHT,null);
+                g.drawLine(0,600+player.height,WIDTH,600+player.height);
             } else if (level==3){
-
+                g.drawImage(startlevels[3],0,0,WIDTH,HEIGHT,null);
+                g.drawLine(0,600+player.height,WIDTH,600+player.height);
             } else if (level ==4){
-
+                g.drawImage(startlevels[4],0,0,WIDTH,HEIGHT,null);
+                g.drawLine(0,600+player.height,WIDTH,600+player.height);
             } else if (level==7){
-
+                g.drawImage(startLevel7,0,0,WIDTH,HEIGHT,null);
+                g.drawLine(0,600+player.height,WIDTH,600+player.height);
             }
             for (int x = 0; x <= blockArray.length - 1; x++) {
                 if (!blockArray[x].isDeadly) {
