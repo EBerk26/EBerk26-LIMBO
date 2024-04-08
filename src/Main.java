@@ -54,7 +54,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     Player player = new Player();
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 10;
+    int startlevel = 1;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
             player.rightIsPressed = true;
@@ -108,14 +108,6 @@ public class Main implements Runnable,KeyListener,MouseListener {
             level=startlevel;
             if(startlevel>=9){
                 player.allowWrapping = false;
-                if(level==1+numberOfStartLevels) {
-                    blockArray[0].placeBlock(1000, 520, 400, 50);
-                    blockArray[1].placeBlock(800, 449, 30, 20);
-                    blockArray[2].placeBlock(686, 387, 30, 20);
-                    blockArray[3].placeBlock(686, 267, 200, 20);
-                    blockArray[4].placeBlock(926, 179, 50, 10);
-                    blockArray[5].placeBlock(1063, 126, 41, 24);
-                }
                 setUpLevels();
             }
             while (true) {
@@ -185,7 +177,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
             level++;
             if(level==1+numberOfStartLevels){
                 player.allowWrapping = false;
-
+                setUpLevels();
             }
             player.teleport(-player.width,600);
 
@@ -206,6 +198,14 @@ public class Main implements Runnable,KeyListener,MouseListener {
         }
     }
     void setUpLevels(){
+        if(level==1+numberOfStartLevels) {
+            blockArray[0].placeBlock(1000, 520, 400, 50);
+            blockArray[1].placeBlock(800, 449, 30, 20);
+            blockArray[2].placeBlock(686, 387, 30, 20);
+            blockArray[3].placeBlock(686, 267, 200, 20);
+            blockArray[4].placeBlock(926, 179, 50, 10);
+            blockArray[5].placeBlock(1063, 126, 41, 24);
+        }
         if (level==2+numberOfStartLevels){
             blockArray[1].placeBlock(239,640-120,20,120);
             blockArray[1].isDeadly = true;
