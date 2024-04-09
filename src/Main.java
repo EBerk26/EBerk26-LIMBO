@@ -11,7 +11,11 @@ public class Main implements Runnable,KeyListener,MouseListener {
     int numberOfStartLevels = 8;
     int mouseX,mouseY;
     boolean isstartscreen = true;
+    Image level10;
     Image[] startlevels = new Image[5];
+    Image level9_1;
+    Image level9_2;
+    boolean level9_changeImage = false;
     @Override
     public void mouseClicked(MouseEvent e) {
         if(isPlaying) {
@@ -45,6 +49,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     public int WIDTH = 1470;
     public int HEIGHT = 880;
     public JFrame JFrame;
+    boolean hasDied = false;
     public Canvas Canvas;
     public JPanel JPanel;
     Image startLevel7;
@@ -52,9 +57,10 @@ public class Main implements Runnable,KeyListener,MouseListener {
     public BufferStrategy BufferStrategy;
     boolean touchingBlock;
     Player player = new Player();
+    int floorLevel = 600+ player.height;
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 1;
+    int startlevel = 11;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
             player.rightIsPressed = true;
@@ -89,6 +95,9 @@ public class Main implements Runnable,KeyListener,MouseListener {
         for(int x = 1;x<=4;x++){
             startlevels[x] = Toolkit.getDefaultToolkit().getImage("startLevel"+x+".png");
         }
+        level9_1 = Toolkit.getDefaultToolkit().getImage("It's not all empty.png");
+        level9_2 = Toolkit.getDefaultToolkit().getImage("Do I go up?.png");
+        level10 = Toolkit.getDefaultToolkit().getImage("Even death is no escape.png");
         startLevel7 = Toolkit.getDefaultToolkit().getImage("startLevel7.png");
         setUpGraphics();
         startScreen = Toolkit.getDefaultToolkit().getImage("Limbo Start Screen.png");
@@ -111,7 +120,6 @@ public class Main implements Runnable,KeyListener,MouseListener {
                 setUpLevels();
             }
             while (true) {
-
                 moveThings();
                 render();
                 pause(16);
@@ -128,9 +136,23 @@ public class Main implements Runnable,KeyListener,MouseListener {
             gameStarted = true;
         }
         player.handleMovement();
+        if(level ==9&&player.xpos+player.width>=WIDTH){
+            level9_changeImage = true;
+        }
         for(int x =0;x<blockArray.length;x++){
+            if(blockArray[x].ismoving){
+                blockArray[x].move();
+                blockArray[x].refreshRectangle();
+            }
             if(player.rectangle.intersects(blockArray[x].rectangle)&&blockArray[x].isDeadly){
+                hasDied = true;
                 player.reset();
+                for(int y =0;y<blockArray.length;y++) {
+                    if (blockArray[y].ismoving & y > x) {
+                        blockArray[y].move();
+                        blockArray[y].refreshRectangle();
+                    }
+                }
                 break;
             }
             if(blockArray[x].ismoving&&((player.rectangle.intersects(blockArray[x].rectangle)&&player.ypos+player.height<=blockArray[x].ypos+Math.abs(blockArray[x].dy)+1-player.dy&&leftRightAlignment(x))||(leftRightAlignment(x)&&player.ypos+player.height==blockArray[x].ypos))){
@@ -141,10 +163,6 @@ public class Main implements Runnable,KeyListener,MouseListener {
                     player.ypos = blockArray[x].ypos - player.height + 1;
                     player.ypos += blockArray[x].dy * blockArray[x].ydirection;
                 }
-            }
-            if(blockArray[x].ismoving){
-                blockArray[x].move();
-                blockArray[x].refreshRectangle();
             }
             if(player.xpos+player.width>=blockArray[x].xpos&&player.xpos<=blockArray[x].xpos+blockArray[x].width&&player.ypos<=blockArray[x].ypos+blockArray[x].height&&player.ypos+player.height>=blockArray[x].ypos){
                 touchingBlock = true;
@@ -220,8 +238,15 @@ public class Main implements Runnable,KeyListener,MouseListener {
             blockArray[7].setinmotion(0,-4,0,0,-10,224+23+40);
         }
         if(level==3+numberOfStartLevels){
-            blockArray[1].placeBlock(140,644,200,100);
-            blockArray[1].setinmotion(0,3,-100,2000,220,750);
+            blockArray[1].placeBlock(132,117,325-132,90);
+            blockArray[1].setinmotion(0,3,-100,2000,-2,floorLevel);
+            blockArray[2].placeBlock(325,117-30,30,120);
+            blockArray[2].setinmotion(0,3,-100,2000,-32,floorLevel);
+            blockArray[2].isDeadly = true;
+            blockArray[3].placeBlock(132,117-30,30,120);
+            blockArray[3].setinmotion(0,3,-100,2000,-32,floorLevel);
+            blockArray[3].isDeadly = true;
+
         }
     }
     public void pause(int time){
@@ -271,7 +296,18 @@ public class Main implements Runnable,KeyListener,MouseListener {
             } else if (level==7){
                 g.drawImage(startLevel7,0,0,WIDTH,HEIGHT,null);
                 g.drawLine(0,600+player.height,WIDTH,600+player.height);
+            } else if (level ==9){
+                if(!level9_changeImage) {
+                    g.drawImage(level9_1, 164, 78, 502-164, 275-78, null);
+                } else {
+                    g.drawImage(level9_2,1167, 225, 1405-1167, 357 - 225, null);
+                }
+            } else if (level==10){
+                if(hasDied){
+                    g.drawImage(level10,95,116,405-95,315-116,null);
+                }
             }
+            //level 11 - There are problems with this reality - after ending up on top of block using bug.
             for (int x = 0; x <= blockArray.length - 1; x++) {
                 if (!blockArray[x].isDeadly) {
                     g.setColor(Color.ORANGE);
