@@ -8,6 +8,7 @@ public class Player {
     boolean rightIsPressed;
     boolean upIsPressed;
     double dx = 5.5;
+    static double originalDx = 5.5;
     final double initialJumpPower = 15;
     double strengthOfGravity=0.76;
     double dy;
