@@ -16,6 +16,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     Image level9_1;
     Image level9_2;
     Image level11;
+    Image level12;
     boolean level9_changeImage = false;
     boolean level11_image = false;
     @Override
@@ -49,6 +50,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     }
 
     public int WIDTH = 1470;
+    boolean drawButton13 = true;
     public int HEIGHT = 880;
     public JFrame JFrame;
     boolean hasDied = false;
@@ -62,7 +64,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     int floorLevel = 600+ player.height;
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 12;
+    int startlevel = 13;
     boolean onHorizontalMovingBlock = false;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
@@ -103,6 +105,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
         level10 = Toolkit.getDefaultToolkit().getImage("Even death is no escape.png");
         startLevel7 = Toolkit.getDefaultToolkit().getImage("startLevel7.png");
         level11 = Toolkit.getDefaultToolkit().getImage("There are problems with this reality.png");
+        level12 = Toolkit.getDefaultToolkit().getImage("It's getting more difficult.png");
         setUpGraphics();
         startScreen = Toolkit.getDefaultToolkit().getImage("Limbo Start Screen.png");
     }
@@ -134,7 +137,6 @@ public class Main implements Runnable,KeyListener,MouseListener {
         return(player.xpos+player.width>=1+blockArray[blocknumber].xpos&&player.xpos+1<=blockArray[blocknumber].xpos+blockArray[blocknumber].width);
     }
     public void moveThings() {
-        System.out.println("Player: ("+player.xpos+", "+player.ypos+player.height+")");
         touchingBlock = false;
         onHorizontalMovingBlock = false;
         if(level==1&&!gameStarted){
@@ -226,6 +228,11 @@ public class Main implements Runnable,KeyListener,MouseListener {
             player.reset();
             setUpLevels();
         }
+        if(drawButton13&&level==13&&player.xpos+player.width>=725&&player.xpos<=745&&player.ypos+player.height>=floorLevel-100-player.height/2-10){
+            drawButton13 = false;
+            player.ypos-=2;
+            blockArray[1].setinmotion(0,3,0,0,-2,floorLevel);
+        }
     }
     void setUpLevels(){
         if(level==1+numberOfStartLevels) {
@@ -269,6 +276,10 @@ public class Main implements Runnable,KeyListener,MouseListener {
             blockArray[3].setinmotion(0,4.7,0,0,300+73-20,floorLevel);
             blockArray[3].isDeadly = true;
             blockArray[4].placeBlock(1300-50,180,50,50);
+            blockArray[5].placeBlock(1131-player.width,96,3,151-96);
+        }
+        if (level==13){
+            blockArray[1].placeBlock(624,floorLevel-100,(WIDTH/2-624)*2,100);
         }
     }
     public void pause(int time){
@@ -335,6 +346,18 @@ public class Main implements Runnable,KeyListener,MouseListener {
                 if(level11_image){
                     g.drawImage(level11,960,131,1299-960,372-131,null);
                 }
+            } else if (level==12){
+                g.drawImage(level12,119,87,477-119,375-87,null);
+            } else if (level==13){
+                if(drawButton13){
+                    g.setColor(Color.CYAN);
+                    g.fillOval(WIDTH/2-20/2,floorLevel-100-player.height/2-10,20,20);
+                }
+            } else if (level==14){
+                //Whoever put me here doesn't want me to leave
+            } else if (level ==15){
+                //no text
+                //Upon Win: two blank, Is this the end? Or the beginning? one blank. Does it ever end? (does it ever end is level 7)
             }
             for (int x = 0; x <= blockArray.length - 1; x++) {
                 if (!blockArray[x].isDeadly) {
