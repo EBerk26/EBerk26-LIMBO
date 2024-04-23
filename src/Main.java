@@ -17,6 +17,9 @@ public class Main implements Runnable,KeyListener,MouseListener {
     Image level9_2;
     Image level11;
     Image level12;
+    Image level14;
+    Image level17;
+    Image level18;
     boolean level9_changeImage = false;
     boolean level11_image = false;
     @Override
@@ -64,7 +67,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     int floorLevel = 600+ player.height;
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = 13;
+    int startlevel = numberOfStartLevels;
     boolean onHorizontalMovingBlock = false;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
@@ -106,6 +109,9 @@ public class Main implements Runnable,KeyListener,MouseListener {
         startLevel7 = Toolkit.getDefaultToolkit().getImage("startLevel7.png");
         level11 = Toolkit.getDefaultToolkit().getImage("There are problems with this reality.png");
         level12 = Toolkit.getDefaultToolkit().getImage("It's getting more difficult.png");
+        level14 = Toolkit.getDefaultToolkit().getImage("level14.png");
+        level17 = Toolkit.getDefaultToolkit().getImage("level17.png");
+        level18 = Toolkit.getDefaultToolkit().getImage("level18.png");
         setUpGraphics();
         startScreen = Toolkit.getDefaultToolkit().getImage("Limbo Start Screen.png");
     }
@@ -205,8 +211,18 @@ public class Main implements Runnable,KeyListener,MouseListener {
             player.dy=0;
             player.fall();
         }
-        if(level<=numberOfStartLevels&&player.xpos>=WIDTH){
-            level++;
+        if((level<=numberOfStartLevels||level>=15)&&player.xpos>=WIDTH){
+            if(level<=19) {
+                level++;
+            }
+            if(level ==20){
+                startlevel = 1;
+                level = 7;
+                level11_image = false;
+                drawButton13 = true;
+                hasDied = false;
+                player.teleport(-player.width,floorLevel-player.height);
+            }
             if(level==1+numberOfStartLevels){
                 player.allowWrapping = false;
                 setUpLevels();
@@ -228,16 +244,17 @@ public class Main implements Runnable,KeyListener,MouseListener {
             player.reset();
             setUpLevels();
         }
-        if(drawButton13&&level==13&&player.xpos+player.width>=725&&player.xpos<=745&&player.ypos+player.height>=floorLevel-100-player.height/2-10){
+        if(drawButton13&&level==13&&player.xpos+player.width>=725&&player.xpos<=745&&player.ypos+player.height>=floorLevel-100- (double) player.height /2-10){
             drawButton13 = false;
             player.ypos-=2;
-            blockArray[1].setinmotion(0,3,0,0,-3,floorLevel);
+            blockArray[1].setinmotion(0,3,0,0,-4,floorLevel);
             blockArray[2].placeBlock(6,330,219-6,405-339);
             blockArray[3].placeBlock(1304,177,1455-1304,254-177);
             blockArray[4].placeBlock(11,0,248-11,173);
-            for(int x = 2;x<=4;x++){
+            blockArray[5].placeBlock(552,207,697-552,296-207);
+            for(int x = 2;x<=5;x++){
                 blockArray[x].isDeadly = true;
-                blockArray[x].setinmotion(6,0,0,WIDTH,0,0);
+                blockArray[x].setinmotion(8,0,0,WIDTH,0,0);
             }
         }
     }
@@ -287,6 +304,21 @@ public class Main implements Runnable,KeyListener,MouseListener {
         }
         if (level==13){
             blockArray[1].placeBlock(624,floorLevel-100,(WIDTH/2-624)*2,100);
+        }
+        if (level==14){
+            blockArray[0].placeBlock(0,485-50,WIDTH-300,50);
+            blockArray[0].isDeadly = true;
+            for(int x =1;x<=3;x++) {
+                blockArray[x].placeBlock(206+300*(x-1), 207 + 100 + 150, 60, 100);
+                blockArray[x].isDeadly = true;
+                blockArray[x].setinmotion(0, 10, 0, 0, 457, floorLevel + floorLevel - 457);
+            }
+            blockArray[4].placeBlock(WIDTH-200,floorLevel,200,100);
+            blockArray[4].setinmotion(0,4,0,0,-5,floorLevel+100);
+        }
+        if (level==15){
+            player.allowWrapping = true;
+            player.teleport(-player.width,floorLevel-player.height);
         }
     }
     public void pause(int time){
@@ -361,10 +393,13 @@ public class Main implements Runnable,KeyListener,MouseListener {
                     g.fillOval(WIDTH/2-20/2,floorLevel-100-player.height/2-10,20,20);
                 }
             } else if (level==14){
-                //Whoever put me here doesn't want me to leave
-            } else if (level ==15){
-                //no text
-                //Upon Win: two blank, Is this the end? Or the beginning? one blank. Does it ever end? (does it ever end is level 7)
+                g.drawImage(level14,90,52,368-90,369-52,null);
+            } else if (level == 17){
+                g.drawImage(level17,0,0,WIDTH,floorLevel,null);
+                g.drawLine(0,600+player.height,WIDTH,600+player.height);
+            } else if (level == 18){
+                g.drawImage(level18,0,0,WIDTH,floorLevel,null);
+                g.drawLine(0,600+player.height,WIDTH,600+player.height);
             }
             for (int x = 0; x <= blockArray.length - 1; x++) {
                 if (!blockArray[x].isDeadly) {
