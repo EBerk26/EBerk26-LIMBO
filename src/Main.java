@@ -231,7 +231,14 @@ public class Main implements Runnable,KeyListener,MouseListener {
         if(drawButton13&&level==13&&player.xpos+player.width>=725&&player.xpos<=745&&player.ypos+player.height>=floorLevel-100-player.height/2-10){
             drawButton13 = false;
             player.ypos-=2;
-            blockArray[1].setinmotion(0,3,0,0,-2,floorLevel);
+            blockArray[1].setinmotion(0,3,0,0,-3,floorLevel);
+            blockArray[2].placeBlock(6,330,219-6,405-339);
+            blockArray[3].placeBlock(1304,177,1455-1304,254-177);
+            blockArray[4].placeBlock(11,0,248-11,173);
+            for(int x = 2;x<=4;x++){
+                blockArray[x].isDeadly = true;
+                blockArray[x].setinmotion(6,0,0,WIDTH,0,0);
+            }
         }
     }
     void setUpLevels(){
@@ -258,7 +265,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
         }
         if(level==3+numberOfStartLevels){
             blockArray[1].placeBlock(132,117,325-132,90);
-            blockArray[1].setinmotion(0,3,-100,2000,-2,floorLevel);
+            blockArray[1].setinmotion(0,3,-100,2000,-3,floorLevel);
             blockArray[2].placeBlock(325,117-30,30,120);
             blockArray[2].setinmotion(0,3,-100,2000,-32,floorLevel);
             blockArray[2].isDeadly = true;
