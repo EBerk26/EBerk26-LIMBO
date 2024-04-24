@@ -67,7 +67,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
     int floorLevel = 600+ player.height;
     Block[] blockArray = new Block[10];
     int level = 1;
-    int startlevel = numberOfStartLevels;
+    int startlevel = 1;
     boolean onHorizontalMovingBlock = false;
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_RIGHT){
@@ -219,6 +219,7 @@ public class Main implements Runnable,KeyListener,MouseListener {
                 startlevel = 1;
                 level = 7;
                 level11_image = false;
+                level9_changeImage = false;
                 drawButton13 = true;
                 hasDied = false;
                 player.teleport(-player.width,floorLevel-player.height);
